@@ -20,6 +20,7 @@
     --border: #7a5a20;
     --border-dim: #7a5a2055;
     --text-dim: #9a7a40;
+    --text-mid: #c8a870;
     --blue: #4488ff;
     --red: #ff6644;
     --purple: #a080f0;
@@ -669,6 +670,144 @@
   }
   .overlay-stats { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 
+  /* ── Introdução cinemática ── */
+  .intro-overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 24px;
+    animation: storyFadeIn 1s ease;
+  }
+  .intro-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .intro-box {
+    max-width: 660px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  .intro-act {
+    font-size: 10px;
+    letter-spacing: 6px;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0;
+    transition: opacity 0.8s;
+  }
+  .intro-icon {
+    font-size: 64px;
+    margin-bottom: 18px;
+    filter: drop-shadow(0 0 18px var(--gold-glow));
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity 0.8s, transform 0.8s;
+  }
+  .intro-title {
+    font-size: clamp(20px, 5vw, 32px);
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 4px;
+    text-shadow: 0 0 30px var(--gold-glow);
+    margin-bottom: 24px;
+    opacity: 0;
+    transition: opacity 0.8s;
+  }
+  .intro-text {
+    font-family: 'Crimson Text', serif;
+    font-size: clamp(16px, 2.5vw, 19px);
+    font-style: italic;
+    color: #d4b070;
+    line-height: 1.85;
+    max-width: 520px;
+    margin: 0 auto 32px;
+    min-height: 80px;
+  }
+  .intro-text em { color: var(--gold); font-style: normal; font-weight: 600; }
+  .intro-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--gold);
+    vertical-align: text-bottom;
+    animation: blinkCursor 0.7s step-end infinite;
+    margin-left: 2px;
+  }
+  @keyframes blinkCursor { 0%,100%{opacity:1} 50%{opacity:0} }
+  .intro-progress {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .intro-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.4s, box-shadow 0.4s;
+  }
+  .intro-dot.active {
+    background: var(--gold);
+    box-shadow: 0 0 8px var(--gold-glow);
+  }
+  .intro-dot.done {
+    background: var(--gold-dim);
+  }
+  .intro-btn {
+    background: linear-gradient(135deg, #8b5e00, #c8922a);
+    color: #fff8e0;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 40px;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 24px #f0c04033;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .intro-btn.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .intro-btn:hover {
+    background: linear-gradient(135deg, #a06a00, #e0a030);
+    box-shadow: 0 0 36px #f0c04066;
+    transform: translateY(-2px);
+  }
+  .intro-skip {
+    display: block;
+    margin-top: 14px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: 'Cinzel', serif;
+    transition: color 0.2s;
+  }
+  .intro-skip:hover { color: var(--gold-dim); }
+  .intro-divider {
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    margin: 0 auto 28px;
+    opacity: 0;
+    transition: opacity 0.8s;
+  }
+
   /* ── Tela de história entre fases ── */
   .story-overlay {
     position: fixed;
@@ -841,6 +980,205 @@
     </div>
   </div>
 
+  <!-- ── Modal Configurações / Temas ── -->
+  <div id="settings-modal" style="display:none;position:fixed;inset:0;background:#0a0602ee;z-index:80;align-items:center;justify-content:center;padding:16px;">
+    <div style="background:radial-gradient(ellipse at 50% 0%,#3d2510 0%,#1a0e05 90%);border:2px solid var(--gold-dim);border-radius:18px;padding:28px 22px;width:min(520px,calc(100vw - 32px));max-height:90vh;overflow-y:auto;box-shadow:0 0 80px #f0c04033;">
+
+      <div style="text-align:center;margin-bottom:18px;">
+        <div style="font-size:32px;margin-bottom:6px;">⚙️</div>
+        <div style="color:var(--gold);font-size:16px;font-weight:900;letter-spacing:3px;">CONFIGURAÇÕES</div>
+        <div style="color:var(--text-dim);font-size:11px;letter-spacing:2px;margin-top:4px;">personalize sua experiência</div>
+      </div>
+
+      <div style="height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),transparent);margin-bottom:20px;"></div>
+
+      <!-- TEMAS -->
+      <div style="margin-bottom:20px;">
+        <div style="color:var(--gold);font-size:11px;letter-spacing:3px;font-weight:900;margin-bottom:6px;">🎨 TEMA VISUAL</div>
+        <div style="color:var(--text-dim);font-size:11px;margin-bottom:14px;">Escolha a aparência do Portal de Venn. O tema é salvo automaticamente.</div>
+        <div id="theme-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
+      </div>
+
+      <div style="height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),transparent);margin:20px 0;"></div>
+
+      <!-- MÚSICA -->
+      <div style="margin-bottom:20px;">
+        <div style="color:var(--gold);font-size:11px;letter-spacing:3px;font-weight:900;margin-bottom:6px;">🎵 MÚSICA DO TEMA</div>
+        <div style="color:var(--text-dim);font-size:11px;margin-bottom:14px;">Cada tema tem sua própria trilha sonora. A música muda automaticamente ao trocar o tema.</div>
+        <div id="music-preview-box" style="background:var(--bg-mid);border:1.5px solid var(--border-dim);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <div>
+            <div style="color:var(--gold);font-size:11px;font-weight:900;letter-spacing:1px;" id="current-track-name">—</div>
+            <div style="color:var(--text-dim);font-size:10px;margin-top:3px;" id="current-track-theme">Selecione um tema</div>
+          </div>
+          <button id="preview-btn" onclick="toggleMusicPreview()" style="flex-shrink:0;background:linear-gradient(135deg,var(--bg-light),var(--bg-mid));border:1.5px solid var(--border);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:11px;font-weight:900;letter-spacing:1px;padding:8px 14px;cursor:pointer;transition:all 0.2s;">
+            ▶ OUVIR
+          </button>
+        </div>
+      </div>
+
+      <div style="height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),transparent);margin:20px 0;"></div>
+      <div style="margin-bottom:20px;">
+        <div style="color:var(--gold);font-size:11px;letter-spacing:3px;font-weight:900;margin-bottom:10px;">ℹ️ INFORMAÇÕES</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="background:var(--bg-mid);border:1px solid var(--border-dim);border-radius:8px;padding:10px 13px;color:var(--text-mid);font-size:11px;line-height:1.6;">
+            💾 O modo <strong style="color:var(--gold)">offline</strong> salva seu progresso automaticamente no navegador.
+          </div>
+          <div style="background:var(--bg-mid);border:1px solid var(--border-dim);border-radius:8px;padding:10px 13px;color:var(--text-mid);font-size:11px;line-height:1.6;">
+            🧊💣✨ Use os <strong style="color:var(--gold)">poderes</strong> com sabedoria — cada um tem apenas 3 usos por jogo.
+          </div>
+          <div style="background:var(--bg-mid);border:1px solid var(--border-dim);border-radius:8px;padding:10px 13px;color:var(--text-mid);font-size:11px;line-height:1.6;">
+            🌐 Para o modo <strong style="color:var(--gold)">online</strong>, crie ou entre em uma sala usando o menu principal.
+          </div>
+          <div style="background:var(--bg-mid);border:1px solid var(--border-dim);border-radius:8px;padding:10px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <span style="color:var(--text-mid);font-size:11px;">📜 Rever a <strong style="color:var(--gold)">introdução</strong> no próximo novo jogo.</span>
+            <button onclick="localStorage.removeItem('venn-intro-seen');showToast('Introdução será exibida no próximo novo jogo!');" style="flex-shrink:0;background:var(--bg-light);border:1px solid var(--border);border-radius:7px;color:var(--gold);font-family:'Cinzel',serif;font-size:9px;font-weight:900;letter-spacing:1px;padding:6px 10px;cursor:pointer;">REVER</button>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="closeSettings()" style="width:100%;padding:13px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));border:none;border-radius:10px;color:#1a0e05;font-size:13px;font-weight:900;letter-spacing:3px;cursor:pointer;">
+        SALVAR E FECHAR
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Modal Tutorial ── -->
+  <div id="tutorial-modal" style="display:none;position:fixed;inset:0;background:#0a0602ee;z-index:80;align-items:center;justify-content:center;overflow-y:auto;padding:16px;">
+    <div style="background:radial-gradient(ellipse at 50% 0%,#3d2510 0%,#1a0e05 90%);border:2px solid var(--gold-dim);border-radius:18px;padding:28px 22px;width:min(480px,calc(100vw - 32px));max-height:90vh;overflow-y:auto;box-shadow:0 0 80px #f0c04033;position:relative;">
+
+      <div style="text-align:center;margin-bottom:18px;">
+        <div style="font-size:32px;margin-bottom:6px;">📜</div>
+        <div style="color:var(--gold);font-size:16px;font-weight:900;letter-spacing:3px;">COMO JOGAR</div>
+        <div style="color:var(--text-dim);font-size:11px;letter-spacing:2px;margin-top:4px;">O PORTAL DE VENN</div>
+      </div>
+
+      <div style="height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),transparent);margin-bottom:18px;"></div>
+
+      <!-- OBJETIVO -->
+      <div style="margin-bottom:18px;">
+        <div style="color:var(--gold);font-size:11px;letter-spacing:3px;font-weight:900;margin-bottom:8px;">⟡ OBJETIVO</div>
+        <div style="color:var(--text-mid);font-size:13px;line-height:1.7;">
+          Classifique todas as <strong style="color:var(--gold)">oferendas</strong> nas regiões corretas do <strong style="color:var(--gold)">Diagrama de Venn</strong> antes que o tempo acabe. Complete todas as salas para conquistar o templo!
+        </div>
+      </div>
+
+      <!-- DIAGRAMA DE VENN -->
+      <div style="margin-bottom:18px;">
+        <div style="color:var(--gold);font-size:11px;letter-spacing:3px;font-weight:900;margin-bottom:8px;">⟡ O DIAGRAMA DE VENN</div>
+        <div style="color:var(--text-mid);font-size:13px;line-height:1.7;margin-bottom:10px;">
+          O diagrama possui <strong style="color:#6aabff">dois círculos</strong> com regras definidas. Cada região tem um significado:
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:#1a0e0588;border:1px solid #6aabff66;border-radius:10px;padding:10px;text-align:center;">
+            <div style="color:#6aabff;font-size:18px;margin-bottom:4px;">🔵</div>
+            <div style="color:#6aabff;font-size:10px;font-weight:900;letter-spacing:1px;">CÍRCULO AZUL</div>
+            <div style="color:var(--text-dim);font-size:11px;margin-top:4px;">Satisfaz apenas a regra do círculo azul</div>
+          </div>
+          <div style="background:#1a0e0588;border:1px solid #ff666666;border-radius:10px;padding:10px;text-align:center;">
+            <div style="color:#ff8888;font-size:18px;margin-bottom:4px;">🔴</div>
+            <div style="color:#ff8888;font-size:10px;font-weight:900;letter-spacing:1px;">CÍRCULO VERMELHO</div>
+            <div style="color:var(--text-dim);font-size:11px;margin-top:4px;">Satisfaz apenas a regra do círculo vermelho</div>
+          </div>
+          <div style="background:#1a0e0588;border:1px solid #a060ff66;border-radius:10px;padding:10px;text-align:center;">
+            <div style="color:#c090ff;font-size:18px;margin-bottom:4px;">⚪</div>
+            <div style="color:#c090ff;font-size:10px;font-weight:900;letter-spacing:1px;">INTERSEÇÃO</div>
+            <div style="color:var(--text-dim);font-size:11px;margin-top:4px;">Satisfaz as regras dos <em>dois</em> círculos ao mesmo tempo</div>
+          </div>
+          <div style="background:#1a0e0588;border:1px solid #55555566;border-radius:10px;padding:10px;text-align:center;">
+            <div style="color:#888;font-size:18px;margin-bottom:4px;">⬛</div>
+            <div style="color:#aaa;font-size:10px;font-weight:900;letter-spacing:1px;">NENHUM</div>
+            <div style="color:var(--text-dim);font-size:11px;margin-top:4px;">Não satisfaz nenhuma das duas regras</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMO JOGAR -->
+      <div style="margin-bottom:18px;">
+        <div style="color:var(--gold);font-size:11px;letter-spacing:3px;font-weight:900;margin-bottom:8px;">⟡ COMO JOGAR</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <div style="background:var(--gold);color:#1a0e05;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;">1</div>
+            <div style="color:var(--text-mid);font-size:13px;line-height:1.6;">Leia as regras exibidas acima do diagrama — elas definem o que pertence a cada círculo.</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <div style="background:var(--gold);color:#1a0e05;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;">2</div>
+            <div style="color:var(--text-mid);font-size:13px;line-height:1.6;">Clique em uma <strong style="color:var(--gold)">oferenda</strong> no painel esquerdo para selecioná-la.</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <div style="background:var(--gold);color:#1a0e05;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;">3</div>
+            <div style="color:var(--text-mid);font-size:13px;line-height:1.6;">Clique na <strong style="color:var(--gold)">região correta</strong> do diagrama para posicionar a oferenda. Você também pode <strong style="color:var(--gold)">arrastar</strong> a oferenda diretamente!</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <div style="background:var(--gold);color:#1a0e05;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;">4</div>
+            <div style="color:var(--text-mid);font-size:13px;line-height:1.6;">Classifique todas as oferendas corretamente para avançar para a próxima sala!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HUD -->
+      <div style="margin-bottom:18px;">
+        <div style="color:var(--gold);font-size:11px;letter-spacing:3px;font-weight:900;margin-bottom:8px;">⟡ PAINEL DE INFORMAÇÕES (HUD)</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:10px;background:#1a0e0566;border-radius:8px;padding:8px 12px;">
+            <span style="font-size:16px;">⭐</span>
+            <div><span style="color:var(--gold);font-size:11px;font-weight:900;">PONTOS</span> <span style="color:var(--text-dim);font-size:11px;">— Acumulados ao acertar. Aumenta conforme o nível de dificuldade.</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:#1a0e0566;border-radius:8px;padding:8px 12px;">
+            <span style="font-size:16px;">⏱️</span>
+            <div><span style="color:var(--gold);font-size:11px;font-weight:900;">TEMPO</span> <span style="color:var(--text-dim);font-size:11px;">— Cada sala tem tempo limitado. Se acabar, você perde a sala!</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:#1a0e0566;border-radius:8px;padding:8px 12px;">
+            <span style="font-size:16px;">🏛️</span>
+            <div><span style="color:var(--gold);font-size:11px;font-weight:900;">SALA</span> <span style="color:var(--text-dim);font-size:11px;">— Indica em qual sala do templo você está.</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:#1a0e0566;border-radius:8px;padding:8px 12px;">
+            <span style="font-size:16px;">❌</span>
+            <div><span style="color:var(--gold);font-size:11px;font-weight:900;">ERROS</span> <span style="color:var(--text-dim);font-size:11px;">— Conta os erros cometidos. Tente minimizar para melhor pontuação.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PODERES -->
+      <div style="margin-bottom:18px;">
+        <div style="color:var(--gold);font-size:11px;letter-spacing:3px;font-weight:900;margin-bottom:8px;">⟡ PODERES ESPECIAIS</div>
+        <div style="color:var(--text-dim);font-size:11px;margin-bottom:10px;">Cada poder tem 3 usos por jogo. Use com sabedoria!</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#1a0e0566;border:1px solid #4488ff44;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:12px;">
+            <span style="font-size:24px;">🧊</span>
+            <div>
+              <div style="color:#88bbff;font-size:12px;font-weight:900;letter-spacing:1px;">CONGELAR</div>
+              <div style="color:var(--text-dim);font-size:11px;line-height:1.5;">Paralisa o cronômetro por alguns segundos, dando mais tempo para pensar.</div>
+            </div>
+          </div>
+          <div style="background:#1a0e0566;border:1px solid #ff884444;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:12px;">
+            <span style="font-size:24px;">💣</span>
+            <div>
+              <div style="color:#ffaa88;font-size:12px;font-weight:900;letter-spacing:1px;">BOMBA</div>
+              <div style="color:var(--text-dim);font-size:11px;line-height:1.5;">Elimina uma oferenda difícil da lista, removendo-a do desafio atual.</div>
+            </div>
+          </div>
+          <div style="background:#1a0e0566;border:1px solid #ffdd4444;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:12px;">
+            <span style="font-size:24px;">✨</span>
+            <div>
+              <div style="color:#ffee88;font-size:12px;font-weight:900;letter-spacing:1px;">DICA</div>
+              <div style="color:var(--text-dim);font-size:11px;line-height:1.5;">Revela a região correta de uma oferenda selecionada. Ideal quando estiver em dúvida!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DICA FINAL -->
+      <div style="background:linear-gradient(135deg,#2a1a0888,#1a0e0588);border:1px solid var(--gold-dim);border-radius:12px;padding:14px;text-align:center;margin-bottom:20px;">
+        <div style="color:var(--gold);font-size:20px;margin-bottom:6px;">💡</div>
+        <div style="color:var(--text-mid);font-size:12px;line-height:1.7;"><strong style="color:var(--gold)">Dica do Templo:</strong> Leia com atenção as regras de cada círculo antes de mover qualquer oferenda. A interseção é a região central — só vai lá quem satisfaz <em>as duas regras</em> ao mesmo tempo!</div>
+      </div>
+
+      <button onclick="closeTutorial()" style="width:100%;padding:13px;background:linear-gradient(135deg,#8b6914,#c8921a);border:none;border-radius:10px;color:#1a0e05;font-size:13px;font-weight:900;letter-spacing:3px;cursor:pointer;">
+        ENTENDIDO — AVANÇAR AO TEMPLO
+      </button>
+    </div>
+  </div>
+
   <div class="online-indicator" id="online-indicator">
     <span class="online-dot"></span>
     <span id="online-text">Conectando...</span>
@@ -907,6 +1245,11 @@
               <span class="btn-text"><span class="btn-label">IR PARA FASE</span></span>
             </button>
           </div>
+
+          <button class="btn" onclick="openTutorial()" style="border-color:#a07830;">
+            <span class="btn-icon">📜</span>
+            <span class="btn-text"><span class="btn-label">COMO JOGAR</span><span class="btn-desc">aprenda as regras e elementos do templo</span></span>
+          </button>
 
           <div class="grid-2">
             <button class="btn" onclick="openSettings()">
@@ -1322,8 +1665,12 @@ function startOfflineOriginal(reset = false) {
   app.currentRunId = null;
   if (reset) clearSave();
   const save = reset ? null : getSave();
-  if (save) startLevel(save.levelIndex || 0, 'offline', save);
-  else startLevel(0, 'offline', { totalPoints: 0, totalErrors: 0, powers: basePowers() });
+  if (save) {
+    startLevel(save.levelIndex || 0, 'offline', save);
+  } else {
+    const carried = { totalPoints: 0, totalErrors: 0, powers: basePowers() };
+    showIntro(() => startLevel(0, 'offline', carried));
+  }
 }
 
 function continueOfflineGame() {
@@ -1339,7 +1686,8 @@ async function startOnlineOriginal() {
   if (!app.room) return showToast('Crie ou entre em uma sala antes de começar online.');
   if (!app.connected) return showToast('Servidor offline. Você pode jogar no modo offline original.');
   app.mode = 'online';
-  startLevel(0, 'online', { totalPoints: 0, totalErrors: 0, powers: basePowers() });
+  const carried = { totalPoints: 0, totalErrors: 0, powers: basePowers() };
+  showIntro(() => startLevel(0, 'online', carried));
 }
 
 async function startLevel(levelIndex, mode, carried = {}) {
@@ -1901,6 +2249,214 @@ const STORIES = [
   }
 ];
 
+// ── Introdução Cinemática ─────────────────────────────────────
+const INTRO_ACTS = [
+  {
+    act: 'PRÓLOGO',
+    icon: '🌑',
+    title: 'O CHAMADO',
+    text: 'Há muito tempo, os sábios do mundo antigo descobriram que os números não existem em caos — eles se <em>agrupam</em>, se <em>tocam</em>, se <em>separam</em> como forças vivas.',
+  },
+  {
+    act: 'O TEMPLO',
+    icon: '🏛️',
+    title: 'O PORTAL DE VENN',
+    text: 'Em algum lugar entre o visível e o invisível, ergueu-se o <em>Templo de Venn</em> — um labirinto de câmaras onde cada sala guarda um segredo matemático selado por conjuntos e lógica.',
+  },
+  {
+    act: 'SUA MISSÃO',
+    icon: '🔮',
+    title: 'O ESCOLHIDO',
+    text: 'Você foi convocado. Sua tarefa: decifrar cada sala, classificar as <em>oferendas numéricas</em> nos círculos corretos do diagrama — antes que o tempo apague as runas e o portal se feche para sempre.',
+  },
+  {
+    act: 'A REGRA',
+    icon: '⚖️',
+    title: 'A LEI DOS CONJUNTOS',
+    text: 'Cada número pertence a um lugar: <em>apenas ao círculo azul</em>, <em>apenas ao vermelho</em>, <em>à interseção de ambos</em> — ou a lugar <em>nenhum</em>. Errar tem um custo. Acertar abre o próximo portal.',
+  },
+  {
+    act: 'O INÍCIO',
+    icon: '⚔️',
+    title: 'QUE A JORNADA COMECE',
+    text: 'Dez salas aguardam. Cada uma mais profunda, mais sombria, mais desafiadora que a anterior. O Templo de Venn não conhece piedade — mas recompensa quem pensa com clareza. <em>Você está pronto?</em>',
+  },
+];
+
+function showIntro(callback) {
+  // Não mostra intro se não for a sala 0 ou se já foi vista
+  if (localStorage.getItem('venn-intro-seen') === '1') { callback(); return; }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'intro-overlay';
+  overlay.id = 'intro-overlay';
+
+  // Canvas de partículas
+  overlay.innerHTML = `
+    <canvas class="intro-canvas" id="intro-particles"></canvas>
+    <div class="intro-box">
+      <div class="intro-progress" id="intro-progress"></div>
+      <div class="intro-act" id="intro-act"></div>
+      <div class="intro-icon" id="intro-icon"></div>
+      <div class="intro-divider" id="intro-divider"></div>
+      <div class="intro-title" id="intro-title"></div>
+      <div class="intro-text" id="intro-text"></div>
+      <button class="intro-btn" id="intro-next-btn">CONTINUAR ›</button>
+      <button class="intro-skip" id="intro-skip-btn">PULAR INTRODUÇÃO</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  // ── Partículas flutuantes ──
+  const canvas = document.getElementById('intro-particles');
+  const pctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const particles = Array.from({ length: 55 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.8 + 0.4,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: -(Math.random() * 0.4 + 0.1),
+    alpha: Math.random() * 0.5 + 0.1,
+  }));
+  let particleRAF;
+  function animParticles() {
+    pctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Gradiente sutil de fundo
+    const grad = pctx.createRadialGradient(canvas.width/2, 0, 0, canvas.width/2, canvas.height/2, canvas.height);
+    grad.addColorStop(0, '#2a150844');
+    grad.addColorStop(1, '#00000000');
+    pctx.fillStyle = grad;
+    pctx.fillRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.y < -4) { p.y = canvas.height + 4; p.x = Math.random() * canvas.width; }
+      pctx.beginPath();
+      pctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      pctx.fillStyle = `rgba(240,192,64,${p.alpha})`;
+      pctx.fill();
+    });
+    particleRAF = requestAnimationFrame(animParticles);
+  }
+  animParticles();
+
+  // ── Efeito de digitação ──
+  let typingTimeout = null;
+  function typeText(el, rawHtml, onDone) {
+    // Extrai partes para preservar tags <em>
+    const parts = [];
+    let tmp = rawHtml;
+    const emReg = /<em>(.*?)<\/em>/g;
+    let last = 0, m;
+    while ((m = emReg.exec(rawHtml)) !== null) {
+      if (m.index > last) parts.push({ type: 'plain', text: rawHtml.slice(last, m.index) });
+      parts.push({ type: 'em', text: m[1] });
+      last = m.index + m[0].length;
+    }
+    if (last < rawHtml.length) parts.push({ type: 'plain', text: rawHtml.slice(last) });
+
+    let pi = 0, ci = 0, built = '';
+    const cursor = '<span class="intro-cursor"></span>';
+
+    function tick() {
+      if (pi >= parts.length) { el.innerHTML = built; if (onDone) onDone(); return; }
+      const part = parts[pi];
+      if (ci < part.text.length) {
+        built += part.type === 'em'
+          ? (ci === 0 ? '<em>' : '') + part.text[ci]
+          : part.text[ci];
+        ci++;
+        if (part.type === 'em' && ci === part.text.length) built += '</em>';
+        el.innerHTML = built + cursor;
+        typingTimeout = setTimeout(tick, 22);
+      } else { pi++; ci = 0; tick(); }
+    }
+    tick();
+  }
+
+  // ── Navegação entre atos ──
+  let currentAct = 0;
+  const nextBtn = document.getElementById('intro-next-btn');
+  const skipBtn = document.getElementById('intro-skip-btn');
+
+  function buildProgress() {
+    const prog = document.getElementById('intro-progress');
+    prog.innerHTML = INTRO_ACTS.map((_, i) =>
+      `<div class="intro-dot ${i < currentAct ? 'done' : i === currentAct ? 'active' : ''}"></div>`
+    ).join('');
+  }
+
+  function showAct(index) {
+    const act = INTRO_ACTS[index];
+    const isLast = index === INTRO_ACTS.length - 1;
+
+    // Reset visibilidade
+    const actEl   = document.getElementById('intro-act');
+    const iconEl  = document.getElementById('intro-icon');
+    const divEl   = document.getElementById('intro-divider');
+    const titleEl = document.getElementById('intro-title');
+    const textEl  = document.getElementById('intro-text');
+
+    actEl.style.opacity   = '0';
+    iconEl.style.opacity  = '0';
+    iconEl.style.transform= 'scale(0.7)';
+    divEl.style.opacity   = '0';
+    titleEl.style.opacity = '0';
+    textEl.innerHTML = '';
+    nextBtn.classList.remove('visible');
+    nextBtn.textContent = isLast ? 'ENTRAR NO TEMPLO ⚔️' : 'CONTINUAR ›';
+
+    buildProgress();
+
+    // Sequência de animações
+    setTimeout(() => { actEl.textContent = act.act; actEl.style.opacity = '1'; }, 100);
+    setTimeout(() => { iconEl.textContent = act.icon; iconEl.style.opacity = '1'; iconEl.style.transform = 'scale(1)'; }, 300);
+    setTimeout(() => { divEl.style.opacity = '1'; }, 500);
+    setTimeout(() => { titleEl.textContent = act.title; titleEl.style.opacity = '1'; }, 600);
+    setTimeout(() => {
+      if (typingTimeout) clearTimeout(typingTimeout);
+      typeText(textEl, act.text, () => {
+        setTimeout(() => nextBtn.classList.add('visible'), 300);
+      });
+    }, 900);
+  }
+
+  function advance() {
+    if (typingTimeout) {
+      // Se ainda digitando, completa imediatamente
+      clearTimeout(typingTimeout);
+      typingTimeout = null;
+      const act = INTRO_ACTS[currentAct];
+      document.getElementById('intro-text').innerHTML = act.text;
+      document.getElementById('intro-next-btn').classList.add('visible');
+      return;
+    }
+    currentAct++;
+    if (currentAct >= INTRO_ACTS.length) {
+      finish();
+    } else {
+      showAct(currentAct);
+    }
+  }
+
+  function finish() {
+    localStorage.setItem('venn-intro-seen', '1');
+    cancelAnimationFrame(particleRAF);
+    overlay.style.animation = 'storyFadeIn 0.6s ease reverse';
+    setTimeout(() => { overlay.remove(); callback(); }, 580);
+  }
+
+  nextBtn.addEventListener('click', advance);
+  skipBtn.addEventListener('click', () => {
+    if (typingTimeout) clearTimeout(typingTimeout);
+    finish();
+  });
+
+  showAct(0);
+}
+// ─────────────────────────────────────────────────────────────
+
 function showStoryBeforeLevel(nextIndex, callback) {
   const story = STORIES.find(s => s.forLevel === nextIndex);
   if (!story) { callback(); return; }
@@ -2219,104 +2775,622 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
   if (stroke) ctx.stroke();
 }
 
-function openSettings() {
-  alert('Configurações:\n\n• O modo offline é local e salva no navegador.\n• Use os poderes com cuidado.\n• Para o online, crie ou entre em uma sala.');
+function openTutorial() {
+  const modal = document.getElementById('tutorial-modal');
+  modal.style.display = 'flex';
+  modal.scrollTop = 0;
 }
+
+function closeTutorial() {
+  document.getElementById('tutorial-modal').style.display = 'none';
+}
+
+// Fechar tutorial clicando fora do painel
+document.getElementById('tutorial-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeTutorial();
+});
+
+// ── Sistema de Temas ─────────────────────────────────────────
+const THEMES = {
+  templo: {
+    name: 'Templo Antigo',
+    emoji: '🏛️',
+    desc: 'o tema original do portal',
+    vars: {
+      '--gold':       '#f0c040',
+      '--gold-dim':   '#c8922a',
+      '--gold-glow':  '#f0c04055',
+      '--cream':      '#f5e6c8',
+      '--bg-deep':    '#1a0e05',
+      '--bg-mid':     '#2c1a08',
+      '--bg-light':   '#3d2510',
+      '--border':     '#7a5a20',
+      '--border-dim': '#7a5a2055',
+      '--text-dim':   '#9a7a40',
+      '--text-mid':   '#c8a870',
+      '--blue':       '#4488ff',
+      '--red':        '#ff6644',
+      '--purple':     '#a080f0',
+      '--green':      '#40c050',
+    },
+    bodyBg: 'radial-gradient(circle at 50% 0%, #2b1708 0%, transparent 35%), #0d0702',
+    panelBg: 'radial-gradient(ellipse at 50% 0%, #3d2510 0%, #1a0e05 62%, #0d0702 100%)',
+    titlePulse: ['#f0c04055, 2px 2px 0 #3d2510', '#f0c04099, 0 0 60px #f0c04033, 2px 2px 0 #3d2510'],
+  },
+  abissal: {
+    name: 'Abismo Profundo',
+    emoji: '🌊',
+    desc: 'mergulhe nas profundezas',
+    vars: {
+      '--gold':       '#00d4ff',
+      '--gold-dim':   '#0099cc',
+      '--gold-glow':  '#00d4ff55',
+      '--cream':      '#d0f0ff',
+      '--bg-deep':    '#020a14',
+      '--bg-mid':     '#051828',
+      '--bg-light':   '#082840',
+      '--border':     '#1a6080',
+      '--border-dim': '#1a608055',
+      '--text-dim':   '#2a7a9a',
+      '--text-mid':   '#60b0d0',
+      '--blue':       '#40aaff',
+      '--red':        '#ff4488',
+      '--purple':     '#8855ff',
+      '--green':      '#00ffaa',
+    },
+    bodyBg: 'radial-gradient(circle at 50% 0%, #051828 0%, transparent 35%), #010810',
+    panelBg: 'radial-gradient(ellipse at 50% 0%, #082840 0%, #020a14 62%, #010810 100%)',
+    titlePulse: ['#00d4ff55, 2px 2px 0 #051828', '#00d4ff99, 0 0 60px #00d4ff33, 2px 2px 0 #051828'],
+  },
+  floresta: {
+    name: 'Floresta Sombria',
+    emoji: '🌿',
+    desc: 'entre nas raízes antigas',
+    vars: {
+      '--gold':       '#7dff5e',
+      '--gold-dim':   '#4db840',
+      '--gold-glow':  '#7dff5e55',
+      '--cream':      '#d8f5c8',
+      '--bg-deep':    '#050e02',
+      '--bg-mid':     '#0e200a',
+      '--bg-light':   '#1a3510',
+      '--border':     '#2a6020',
+      '--border-dim': '#2a602055',
+      '--text-dim':   '#3a7a2a',
+      '--text-mid':   '#70b050',
+      '--blue':       '#44aaff',
+      '--red':        '#ff6644',
+      '--purple':     '#cc88ff',
+      '--green':      '#90ff60',
+    },
+    bodyBg: 'radial-gradient(circle at 50% 0%, #0e200a 0%, transparent 35%), #030802',
+    panelBg: 'radial-gradient(ellipse at 50% 0%, #1a3510 0%, #050e02 62%, #030802 100%)',
+    titlePulse: ['#7dff5e55, 2px 2px 0 #1a3510', '#7dff5e99, 0 0 60px #7dff5e33, 2px 2px 0 #1a3510'],
+  },
+  cripta: {
+    name: 'Cripta Violeta',
+    emoji: '💜',
+    desc: 'magia das sombras profundas',
+    vars: {
+      '--gold':       '#cc88ff',
+      '--gold-dim':   '#9944cc',
+      '--gold-glow':  '#cc88ff55',
+      '--cream':      '#eeddf8',
+      '--bg-deep':    '#0a0214',
+      '--bg-mid':     '#180828',
+      '--bg-light':   '#280a3d',
+      '--border':     '#5a2080',
+      '--border-dim': '#5a208055',
+      '--text-dim':   '#7a3a9a',
+      '--text-mid':   '#aa70cc',
+      '--blue':       '#4488ff',
+      '--red':        '#ff4466',
+      '--purple':     '#ff88ff',
+      '--green':      '#44ffaa',
+    },
+    bodyBg: 'radial-gradient(circle at 50% 0%, #180828 0%, transparent 35%), #060010',
+    panelBg: 'radial-gradient(ellipse at 50% 0%, #280a3d 0%, #0a0214 62%, #060010 100%)',
+    titlePulse: ['#cc88ff55, 2px 2px 0 #280a3d', '#cc88ff99, 0 0 60px #cc88ff33, 2px 2px 0 #280a3d'],
+  },
+  chamas: {
+    name: 'Chamas Eternas',
+    emoji: '🔥',
+    desc: 'o fogo que nunca se apaga',
+    vars: {
+      '--gold':       '#ff8830',
+      '--gold-dim':   '#cc5510',
+      '--gold-glow':  '#ff883055',
+      '--cream':      '#ffe8d0',
+      '--bg-deep':    '#160400',
+      '--bg-mid':     '#2a0a00',
+      '--bg-light':   '#3d1200',
+      '--border':     '#802010',
+      '--border-dim': '#80201055',
+      '--text-dim':   '#aa4410',
+      '--text-mid':   '#dd7730',
+      '--blue':       '#44aaff',
+      '--red':        '#ff3300',
+      '--purple':     '#ff44cc',
+      '--green':      '#aaff44',
+    },
+    bodyBg: 'radial-gradient(circle at 50% 0%, #2a0a00 0%, transparent 35%), #0d0200',
+    panelBg: 'radial-gradient(ellipse at 50% 0%, #3d1200 0%, #160400 62%, #0d0200 100%)',
+    titlePulse: ['#ff883055, 2px 2px 0 #3d1200', '#ff883099, 0 0 60px #ff883033, 2px 2px 0 #3d1200'],
+  },
+  gelo: {
+    name: 'Tundra Glacial',
+    emoji: '❄️',
+    desc: 'o frio que cristaliza o tempo',
+    vars: {
+      '--gold':       '#aaddff',
+      '--gold-dim':   '#7799cc',
+      '--gold-glow':  '#aaddff55',
+      '--cream':      '#eef6ff',
+      '--bg-deep':    '#020814',
+      '--bg-mid':     '#061428',
+      '--bg-light':   '#0c2240',
+      '--border':     '#2255aa',
+      '--border-dim': '#2255aa55',
+      '--text-dim':   '#4477aa',
+      '--text-mid':   '#88aad0',
+      '--blue':       '#66ccff',
+      '--red':        '#ff6688',
+      '--purple':     '#aa88ff',
+      '--green':      '#44ffdd',
+    },
+    bodyBg: 'radial-gradient(circle at 50% 0%, #061428 0%, transparent 35%), #010610',
+    panelBg: 'radial-gradient(ellipse at 50% 0%, #0c2240 0%, #020814 62%, #010610 100%)',
+    titlePulse: ['#aaddff55, 2px 2px 0 #0c2240', '#aaddff99, 0 0 60px #aaddff33, 2px 2px 0 #0c2240'],
+  },
+};
+
+let currentTheme = localStorage.getItem('venn-theme') || 'templo';
+
+function applyTheme(id) {
+  const t = THEMES[id];
+  if (!t) return;
+  currentTheme = id;
+  localStorage.setItem('venn-theme', id);
+
+  const root = document.documentElement;
+  Object.entries(t.vars).forEach(([k, v]) => root.style.setProperty(k, v));
+  document.body.style.background = t.bodyBg;
+
+  // Atualiza painéis com o background do tema
+  document.querySelectorAll('.panel-shell').forEach(el => {
+    el.style.background = t.panelBg;
+  });
+
+  // Atualiza seleção visual no modal de temas
+  document.querySelectorAll('.theme-card').forEach(card => {
+    const active = card.dataset.theme === id;
+    card.style.borderColor = active ? t.vars['--gold'] : t.vars['--border-dim'] || '#55555533';
+    card.style.background = active ? t.vars['--bg-light'] + 'cc' : t.vars['--bg-mid'] + '88';
+    card.style.boxShadow = active ? `0 0 18px ${t.vars['--gold-glow']}` : 'none';
+  });
+
+  // Troca a música se estiver tocando
+  if (app.audio && app.audio.enabled) {
+    stopMusic();
+    setTimeout(() => toggleMusic(), 200);
+  }
+  // Atualiza preview box se modal aberto
+  updateMusicPreviewBox();
+}
+
+// Aplica tema salvo ao carregar
+window.addEventListener('DOMContentLoaded', () => {
+  applyTheme(currentTheme);
+  buildThemeCards();
+});
+
+function buildThemeCards() {
+  const grid = document.getElementById('theme-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  Object.entries(THEMES).forEach(([id, t]) => {
+    const card = document.createElement('div');
+    card.className = 'theme-card';
+    card.dataset.theme = id;
+    card.style.cssText = `
+      border: 2px solid ${t.vars['--border-dim'] || '#55555533'};
+      border-radius: 14px;
+      padding: 14px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: ${t.vars['--bg-mid']}88;
+    `;
+    card.innerHTML = `
+      <div style="font-size:28px;margin-bottom:6px;">${t.emoji}</div>
+      <div style="color:${t.vars['--gold']};font-size:10px;font-weight:900;letter-spacing:1px;line-height:1.3;">${t.name}</div>
+      <div style="color:${t.vars['--text-dim']};font-size:9px;margin-top:4px;font-style:italic;">${t.desc}</div>
+      <div style="display:flex;justify-content:center;gap:4px;margin-top:8px;">
+        ${['--gold','--blue','--green','--red','--purple'].map(v =>
+          `<div style="width:10px;height:10px;border-radius:50%;background:${t.vars[v]};"></div>`
+        ).join('')}
+      </div>
+      <div style="color:${t.vars['--text-dim']};font-size:8px;margin-top:6px;letter-spacing:1px;">♪ ${MUSIC_TRACKS[id]?.name || ''}</div>
+    `;
+    card.addEventListener('click', () => applyTheme(id));
+    card.addEventListener('mouseenter', () => {
+      if (id !== currentTheme) {
+        card.style.borderColor = t.vars['--gold-dim'];
+        card.style.transform = 'scale(1.04)';
+      }
+    });
+    card.addEventListener('mouseleave', () => {
+      if (id !== currentTheme) {
+        card.style.borderColor = t.vars['--border-dim'] || '#55555533';
+        card.style.transform = 'scale(1)';
+      }
+    });
+    grid.appendChild(card);
+  });
+  applyTheme(currentTheme);
+}
+
+let previewAudio = null;
+
+function toggleMusicPreview() {
+  // Se a música do jogo está tocando, usa ela como toggle
+  if (app.audio && app.audio.enabled) {
+    stopMusic();
+    updateMusicPreviewBox();
+    return;
+  }
+  // Se preview está tocando, para
+  if (previewAudio) {
+    try {
+      clearTimeout(previewAudio.loopTimeout);
+      previewAudio.ctx.close();
+    } catch(_) {}
+    previewAudio = null;
+    updateMusicPreviewBox();
+    return;
+  }
+  // Inicia preview
+  try {
+    const trackId = currentTheme || 'templo';
+    const result = playTrack(trackId);
+    previewAudio = result;
+    updateMusicPreviewBox();
+    showToast(`♪ ${MUSIC_TRACKS[trackId]?.name || 'Música'}`);
+  } catch(_) {
+    showToast('Seu navegador bloqueou o áudio.');
+  }
+}
+
+function stopPreview() {
+  if (!previewAudio) return;
+  try {
+    clearTimeout(previewAudio.loopTimeout);
+    previewAudio.ctx.close();
+  } catch(_) {}
+  previewAudio = null;
+}
+
+function updateMusicPreviewBox() {
+  const nameEl = document.getElementById('current-track-name');
+  const themeEl = document.getElementById('current-track-theme');
+  const btn = document.getElementById('preview-btn');
+  if (!nameEl || !btn) return;
+
+  const trackId = currentTheme || 'templo';
+  const track = MUSIC_TRACKS[trackId];
+  const theme = THEMES[trackId];
+
+  if (nameEl) nameEl.textContent = track?.name || '—';
+  if (themeEl) themeEl.textContent = theme ? `${theme.emoji} ${theme.name}` : '';
+
+  const isPlaying = (app.audio && app.audio.enabled) || !!previewAudio;
+  btn.textContent = isPlaying ? '⏹ PARAR' : '▶ OUVIR';
+  btn.style.borderColor = isPlaying ? 'var(--gold)' : 'var(--border)';
+  btn.style.boxShadow = isPlaying ? '0 0 12px var(--gold-glow)' : 'none';
+}
+
+function openSettings() {
+  const modal = document.getElementById('settings-modal');
+  modal.style.display = 'flex';
+  buildThemeCards();
+  updateMusicPreviewBox();
+}
+
+function closeSettings() {
+  stopPreview();
+  document.getElementById('settings-modal').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('settings-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeSettings();
+  });
+});
 
 function openCredits() {
   alert('O Portal de Venn\n\nJogo de lógica e conjuntos matemáticos.\ncom desafios por fases, poderes especiais e tempo limitado.\nDesenvolvido por:\nLuis Gustavo, Chagas Filho, João Gabriel, João Pedro.\n');
 }
 
+// ── Trilhas Sonoras por Tema ──────────────────────────────────
+const MUSIC_TRACKS = {
+
+  // 🏛️ Templo Antigo — pentatônica solene, triangle + sine, reverb longo
+  templo: {
+    name: 'Ecos do Templo',
+    BPM: 100,
+    masterVol: 0.18,
+    reverbLen: 2.0,
+    reverbGain: 0.30,
+    melody: {
+      type: 'triangle',
+      vol: 0.50,
+      notes: [
+        261.63, 0, 293.66, 329.63, 0, 392.00, 440.00, 0,
+        392.00, 349.23, 329.63, 0, 293.66, 261.63, 0, 0,
+        293.66, 0, 329.63, 392.00, 0, 440.00, 523.25, 0,
+        440.00, 392.00, 329.63, 0, 261.63, 0, 0, 0,
+      ],
+    },
+    bass: {
+      type: 'sine',
+      vol: 0.35,
+      notes: [
+        130.81, 0, 130.81, 0, 164.81, 0, 164.81, 0,
+        146.83, 0, 146.83, 0, 130.81, 0, 0, 0,
+        130.81, 0, 130.81, 0, 164.81, 0, 164.81, 0,
+        146.83, 0, 174.61, 0, 130.81, 0, 0, 0,
+      ],
+    },
+    pad: null,
+  },
+
+  // 🌊 Abismo Profundo — sine ondulante, arpejo descendente, eco profundo
+  abissal: {
+    name: 'Profundezas',
+    BPM: 72,
+    masterVol: 0.16,
+    reverbLen: 3.0,
+    reverbGain: 0.45,
+    melody: {
+      type: 'sine',
+      vol: 0.45,
+      notes: [
+        369.99, 0, 329.63, 0, 293.66, 0, 261.63, 0,
+        246.94, 0, 220.00, 0, 196.00, 0, 174.61, 0,
+        196.00, 0, 220.00, 0, 246.94, 0, 261.63, 0,
+        293.66, 0, 329.63, 0, 369.99, 0, 392.00, 0,
+      ],
+    },
+    bass: {
+      type: 'sine',
+      vol: 0.40,
+      notes: [
+        98.00, 0, 0, 0, 87.31, 0, 0, 0,
+        92.50, 0, 0, 0, 82.41, 0, 0, 0,
+        87.31, 0, 0, 0, 98.00, 0, 0, 0,
+        92.50, 0, 0, 0, 82.41, 0, 0, 0,
+      ],
+    },
+    pad: { type: 'sine', freqs: [130.81, 164.81, 196.00], vol: 0.08 },
+  },
+
+  // 🌿 Floresta Sombria — sawtooth suave, escala modal, ritmo orgânico
+  floresta: {
+    name: 'Raízes Antigas',
+    BPM: 88,
+    masterVol: 0.15,
+    reverbLen: 1.8,
+    reverbGain: 0.35,
+    melody: {
+      type: 'sawtooth',
+      vol: 0.28,
+      notes: [
+        220.00, 246.94, 261.63, 293.66, 0, 329.63, 293.66, 261.63,
+        246.94, 0, 220.00, 0, 196.00, 220.00, 246.94, 0,
+        261.63, 293.66, 329.63, 293.66, 0, 261.63, 246.94, 220.00,
+        196.00, 0, 174.61, 196.00, 220.00, 0, 246.94, 0,
+      ],
+    },
+    bass: {
+      type: 'triangle',
+      vol: 0.38,
+      notes: [
+        110.00, 0, 110.00, 0, 98.00, 0, 98.00, 0,
+        87.31, 0, 87.31, 0, 110.00, 0, 0, 0,
+        110.00, 0, 110.00, 0, 98.00, 0, 98.00, 0,
+        87.31, 0, 82.41, 0, 87.31, 0, 0, 0,
+      ],
+    },
+    pad: { type: 'sawtooth', freqs: [110.00, 130.81, 164.81], vol: 0.05 },
+  },
+
+  // 💜 Cripta Violeta — square misterioso, escala menor harmônica, notas longas
+  cripta: {
+    name: 'Sombras Eternas',
+    BPM: 66,
+    masterVol: 0.14,
+    reverbLen: 3.5,
+    reverbGain: 0.55,
+    melody: {
+      type: 'square',
+      vol: 0.22,
+      notes: [
+        233.08, 0, 0, 207.65, 0, 0, 185.00, 0,
+        0, 174.61, 0, 0, 155.56, 0, 0, 138.59,
+        0, 0, 155.56, 0, 0, 174.61, 0, 0,
+        185.00, 0, 0, 207.65, 0, 0, 233.08, 0,
+      ],
+    },
+    bass: {
+      type: 'sawtooth',
+      vol: 0.30,
+      notes: [
+        116.54, 0, 0, 0, 103.83, 0, 0, 0,
+        92.50, 0, 0, 0, 87.31, 0, 0, 0,
+        92.50, 0, 0, 0, 103.83, 0, 0, 0,
+        116.54, 0, 0, 0, 123.47, 0, 0, 0,
+      ],
+    },
+    pad: { type: 'square', freqs: [116.54, 138.59, 185.00], vol: 0.06 },
+  },
+
+  // 🔥 Chamas Eternas — sawtooth intenso, escala frígia, BPM alto, batida urgente
+  chamas: {
+    name: 'Fogo Ancestral',
+    BPM: 128,
+    masterVol: 0.16,
+    reverbLen: 1.2,
+    reverbGain: 0.20,
+    melody: {
+      type: 'sawtooth',
+      vol: 0.32,
+      notes: [
+        329.63, 349.23, 329.63, 0, 293.66, 0, 329.63, 311.13,
+        293.66, 0, 261.63, 0, 277.18, 261.63, 246.94, 0,
+        261.63, 277.18, 293.66, 0, 329.63, 0, 349.23, 329.63,
+        311.13, 0, 293.66, 311.13, 329.63, 0, 349.23, 0,
+      ],
+    },
+    bass: {
+      type: 'sawtooth',
+      vol: 0.42,
+      notes: [
+        164.81, 0, 164.81, 0, 146.83, 0, 155.56, 0,
+        130.81, 0, 138.59, 0, 123.47, 0, 130.81, 0,
+        138.59, 0, 146.83, 0, 164.81, 0, 155.56, 0,
+        174.61, 0, 164.81, 0, 155.56, 0, 164.81, 0,
+      ],
+    },
+    pad: null,
+  },
+
+  // ❄️ Tundra Glacial — sine cristalino, escala maior, notas agudas, reverb vasto
+  gelo: {
+    name: 'Cristais do Norte',
+    BPM: 80,
+    masterVol: 0.17,
+    reverbLen: 4.0,
+    reverbGain: 0.60,
+    melody: {
+      type: 'sine',
+      vol: 0.55,
+      notes: [
+        523.25, 0, 587.33, 0, 659.25, 0, 698.46, 0,
+        783.99, 0, 698.46, 0, 659.25, 0, 587.33, 0,
+        523.25, 0, 493.88, 0, 523.25, 0, 587.33, 0,
+        659.25, 0, 587.33, 0, 523.25, 0, 0, 0,
+      ],
+    },
+    bass: {
+      type: 'triangle',
+      vol: 0.30,
+      notes: [
+        261.63, 0, 0, 0, 293.66, 0, 0, 0,
+        329.63, 0, 0, 0, 261.63, 0, 0, 0,
+        246.94, 0, 0, 0, 261.63, 0, 0, 0,
+        293.66, 0, 0, 0, 261.63, 0, 0, 0,
+      ],
+    },
+    pad: { type: 'sine', freqs: [261.63, 329.63, 392.00], vol: 0.07 },
+  },
+};
+
+function makeReverb(ctx, lengthSecs) {
+  const convolver = ctx.createConvolver();
+  const length = Math.floor(ctx.sampleRate * lengthSecs);
+  const buffer = ctx.createBuffer(2, length, ctx.sampleRate);
+  for (let c = 0; c < 2; c++) {
+    const data = buffer.getChannelData(c);
+    for (let i = 0; i < length; i++)
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
+  }
+  convolver.buffer = buffer;
+  return convolver;
+}
+
+function playTrack(trackId) {
+  const track = MUSIC_TRACKS[trackId] || MUSIC_TRACKS.templo;
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const BPM = track.BPM;
+  const beat = 60 / BPM;
+
+  const masterGain = ctx.createGain();
+  masterGain.gain.value = track.masterVol;
+  masterGain.connect(ctx.destination);
+
+  const reverb = makeReverb(ctx, track.reverbLen);
+  const reverbGain = ctx.createGain();
+  reverbGain.gain.value = track.reverbGain;
+  reverb.connect(reverbGain);
+  reverbGain.connect(masterGain);
+
+  // Pad sustentado (harmonia de fundo), se o tema tiver
+  if (track.pad) {
+    track.pad.freqs.forEach(freq => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = track.pad.type;
+      osc.frequency.value = freq;
+      g.gain.value = track.pad.vol;
+      osc.connect(g);
+      g.connect(masterGain);
+      g.connect(reverb);
+      osc.start();
+    });
+  }
+
+  let loopTimeout = null;
+
+  function playLoop() {
+    const startTime = ctx.currentTime + 0.05;
+    const melodyNotes = track.melody.notes;
+    const bassNotes = track.bass.notes;
+    const loopDuration = melodyNotes.length * beat;
+
+    melodyNotes.forEach((freq, i) => {
+      if (!freq) return;
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = track.melody.type;
+      osc.frequency.value = freq;
+      const t = startTime + i * beat;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(track.melody.vol, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, t + beat * 0.80);
+      osc.connect(g); g.connect(masterGain); g.connect(reverb);
+      osc.start(t); osc.stop(t + beat);
+    });
+
+    bassNotes.forEach((freq, i) => {
+      if (!freq) return;
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = track.bass.type;
+      osc.frequency.value = freq;
+      const t = startTime + i * beat;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(track.bass.vol, t + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.001, t + beat * 0.70);
+      osc.connect(g); g.connect(masterGain);
+      osc.start(t); osc.stop(t + beat);
+    });
+
+    loopTimeout = setTimeout(playLoop, loopDuration * 1000 - 50);
+  }
+
+  playLoop();
+  return { ctx, masterGain, loopTimeout };
+}
+
 function toggleMusic() {
   if (app.audio.enabled) return stopMusic();
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-    // Melodia estilo puzzle/ambient em loop
-    const BPM = 110;
-    const beat = 60 / BPM;
-
-    // Notas da melodia principal (Hz) — escala pentatônica
-    const melody = [
-      261.63, 293.66, 329.63, 392.00, 440.00,
-      392.00, 349.23, 329.63, 293.66, 261.63,
-      293.66, 329.63, 392.00, 440.00, 523.25,
-      440.00, 392.00, 329.63, 261.63, 0
-    ];
-
-    // Baixo (notas de fundo)
-    const bass = [130.81, 0, 130.81, 0, 164.81, 0, 164.81, 0, 146.83, 0, 146.83, 0, 130.81, 0, 0, 0, 130.81, 0, 130.81, 0];
-
-    const masterGain = ctx.createGain();
-    masterGain.gain.value = 0.18;
-    masterGain.connect(ctx.destination);
-
-    // Reverb simples (convolver)
-    function makeReverb(ctx) {
-      const convolver = ctx.createConvolver();
-      const length = ctx.sampleRate * 1.5;
-      const buffer = ctx.createBuffer(2, length, ctx.sampleRate);
-      for (let c = 0; c < 2; c++) {
-        const data = buffer.getChannelData(c);
-        for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
-      }
-      convolver.buffer = buffer;
-      return convolver;
-    }
-
-    const reverb = makeReverb(ctx);
-    const reverbGain = ctx.createGain();
-    reverbGain.gain.value = 0.25;
-    reverb.connect(reverbGain);
-    reverbGain.connect(masterGain);
-
-    let loopTimeout = null;
-
-    function playLoop() {
-      const startTime = ctx.currentTime + 0.05;
-      const loopDuration = melody.length * beat;
-
-      melody.forEach((freq, i) => {
-        if (freq === 0) return;
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.value = freq;
-        const t = startTime + i * beat;
-        g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(0.5, t + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.001, t + beat * 0.85);
-        osc.connect(g);
-        g.connect(masterGain);
-        g.connect(reverb);
-        osc.start(t);
-        osc.stop(t + beat);
-      });
-
-      bass.forEach((freq, i) => {
-        if (freq === 0) return;
-        const osc = ctx.createOscillator();
-        const g = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        const t = startTime + i * beat;
-        g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(0.35, t + 0.05);
-        g.gain.exponentialRampToValueAtTime(0.001, t + beat * 0.7);
-        osc.connect(g);
-        g.connect(masterGain);
-        osc.start(t);
-        osc.stop(t + beat);
-      });
-
-      loopTimeout = setTimeout(playLoop, loopDuration * 1000 - 50);
-    }
-
-    playLoop();
-
+    const trackId = currentTheme || 'templo';
+    const { ctx, masterGain, loopTimeout } = playTrack(trackId);
     app.audio = { enabled: true, ctx, masterGain, loopTimeout };
     $('music-btn').textContent = '🔊';
-    showToast('Música ambiente ligada.');
+    const trackName = MUSIC_TRACKS[trackId]?.name || 'Música';
+    showToast(`♪ ${trackName}`);
   } catch (_) {
     showToast('Seu navegador bloqueou o áudio.');
   }
