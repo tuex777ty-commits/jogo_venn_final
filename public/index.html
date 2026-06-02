@@ -874,6 +874,15 @@
             <span class="btn-text"><span class="btn-label">NOVO JOGO OFFLINE</span><span class="btn-desc">começa do início, igual ao modo clássico</span></span>
           </button>
 
+          <div id="phase-selector" style="background:#1a0e05;border:1.5px solid #f0c04033;border-radius:10px;padding:12px 14px;">
+            <div style="font-size:10px;letter-spacing:2px;color:var(--text-dim);margin-bottom:10px;">⚡ ESCOLHER FASE</div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;" id="phase-grid"></div>
+            <button class="btn green" style="width:100%;margin-top:10px;padding:8px;" onclick="startFromSelectedPhase()">
+              <span class="btn-icon">🏛️</span>
+              <span class="btn-text"><span class="btn-label">IR PARA FASE</span></span>
+            </button>
+          </div>
+
           <div class="grid-2">
             <button class="btn" onclick="openSettings()">
               <span class="btn-icon">⚙️</span>
@@ -1142,6 +1151,7 @@ function logout() {
 }
 
 function updateMenuInfo() {
+  buildPhaseGrid();
   updateSaveSlot();
   const modeText = app.mode === 'online' ? 'ONLINE' : 'OFFLINE ORIGINAL';
   const userText = app.user ? app.user.username : 'sem jogador';
@@ -1234,6 +1244,36 @@ async function joinOnlineRoom() {
 }
 
 function basePowers() { return { freeze: 3, bomb: 3, hint: 3 }; }
+
+// ── Seletor de fase ──────────────────────────────────────────
+let selectedPhaseIndex = 0;
+
+function buildPhaseGrid() {
+  const grid = $('phase-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  LEVELS.forEach((lvl, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = lvl.id;
+    btn.title = lvl.name;
+    btn.style.cssText = `
+      padding:8px 4px;font-size:13px;font-weight:bold;border-radius:6px;cursor:pointer;
+      border:1.5px solid ${i === selectedPhaseIndex ? '#f0c040' : '#f0c04033'};
+      background:${i === selectedPhaseIndex ? '#4a3010' : '#0f0905'};
+      color:${i === selectedPhaseIndex ? '#f0c040' : '#a88040'};
+      transition:all .15s;
+    `;
+    btn.onclick = () => {
+      selectedPhaseIndex = i;
+      buildPhaseGrid();
+    };
+    grid.appendChild(btn);
+  });
+}
+
+function startFromSelectedPhase() {
+  startLevel(selectedPhaseIndex, 'offline', { totalPoints: 0, totalErrors: 0, powers: basePowers() });
+}
 
 function startOfflineOriginal(reset = false) {
   app.mode = 'offline';
