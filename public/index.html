@@ -800,9 +800,22 @@
     .rank-extra { display: none; }
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
   <div id="toast"></div>
+
+  <!-- Modal QR Code -->
+  <div id="qr-modal" style="display:none;position:fixed;inset:0;background:#0008;z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#1a0e05;border:1.5px solid #f0c04066;border-radius:14px;padding:28px 24px;max-width:320px;width:90%;text-align:center;">
+      <div style="font-size:11px;letter-spacing:2px;color:var(--text-dim);margin-bottom:6px;">ENTRAR NA SALA</div>
+      <div id="qr-room-name" style="font-size:18px;font-weight:bold;color:#f0c040;margin-bottom:4px;"></div>
+      <div id="qr-room-code" style="font-size:13px;color:var(--text-dim);letter-spacing:3px;margin-bottom:16px;"></div>
+      <div id="qr-canvas" style="background:#fff;padding:12px;border-radius:8px;display:inline-block;margin-bottom:16px;"></div>
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:16px;">Escaneie para entrar direto na sala</div>
+      <button class="btn red" style="width:100%;" onclick="closeQrModal()">FECHAR</button>
+    </div>
+  </div>
 
   <!-- MODAL DE INPUT (substitui prompt() bloqueado pelo ngrok) -->
   <div id="input-modal" class="hidden" style="position:fixed;inset:0;background:#0a0602ee;z-index:70;display:flex;align-items:center;justify-content:center;">
@@ -1211,11 +1224,27 @@ async function createOnlineRoom() {
         app.mode = 'online';
         updateMenuInfo();
         showToast(`Sala criada: ${app.room.roomCode}. Envie esse código para os jogadores.`);
+        showQrModal(app.room);
       } catch (error) {
         showToast(error.message);
       }
     }
   );
+}
+
+function showQrModal(room) {
+  const modal = $('qr-modal');
+  $('qr-room-name').textContent = room.roomName || 'Sala';
+  $('qr-room-code').textContent = `Código: ${room.roomCode}`;
+  const canvas = $('qr-canvas');
+  canvas.innerHTML = '';
+  const joinUrl = `${window.location.origin}?join=${room.roomCode}`;
+  new QRCode(canvas, { text: joinUrl, width: 180, height: 180, colorDark: '#000', colorLight: '#fff', correctLevel: QRCode.CorrectLevel.M });
+  modal.style.display = 'flex';
+}
+
+function closeQrModal() {
+  $('qr-modal').style.display = 'none';
 }
 
 async function joinOnlineRoom() {
