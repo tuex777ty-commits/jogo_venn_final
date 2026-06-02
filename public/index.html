@@ -502,6 +502,18 @@
   .offering-token:hover { border-color: var(--gold); background: #3d2510; transform: scale(1.05); }
   .offering-token.selected { border-color: var(--gold); background: #4a3010; box-shadow: 0 0 10px #f0c04066; color: var(--gold); }
   .offering-token.used { opacity: 0.22; cursor: not-allowed; pointer-events: none; }
+  .offering-token.drag-ghost { opacity: 0.25; transform: scale(0.92); border-style: dashed; }
+  .offering-token.drag-over-hint { border-color: #40ff80; box-shadow: 0 0 14px #40ff8088; }
+  #drag-preview {
+    position: fixed; pointer-events: none; z-index: 9999;
+    background: #4a3010; border: 2px solid #f0c040; border-radius: 8px;
+    padding: 8px 14px; font-size: 18px; font-weight: bold; color: #f0c040;
+    box-shadow: 0 4px 24px #0008, 0 0 18px #f0c04066;
+    transform: translate(-50%, -50%) scale(1.15);
+    transition: box-shadow .1s;
+    font-family: 'Cinzel', serif;
+  }
+  .venn-drop-hint { filter: brightness(1.35); }
 
   .power-btn {
     display: flex;
@@ -1402,7 +1414,12 @@ function renderTokens() {
   $('token-grid').innerHTML = game.level.tokens.map((token, index) => {
     const used = game.used.includes(index);
     const selected = game.selectedIndex === index;
-    return `<button class="offering-token ${used ? 'used' : ''} ${selected ? 'selected' : ''}" onclick="selectToken(${index})">${escapeHtml(token)}</button>`;
+    const ghost = dragState.index === index && dragState.active;
+    return `<button class="offering-token ${used ? 'used' : ''} ${selected ? 'selected' : ''} ${ghost ? 'drag-ghost' : ''}"
+      onclick="selectToken(${index})"
+      onmousedown="dragStart(event,${index})"
+      ontouchstart="touchDragStart(event,${index})"
+    >${escapeHtml(token)}</button>`;
   }).join('');
 }
 
@@ -1477,6 +1494,127 @@ function canvasRegion(x, y) {
 }
 
 function dist(x1, y1, x2, y2) { return Math.hypot(x1 - x2, y1 - y2); }
+
+// ── Drag & Drop System ───────────────────────────────────────
+const dragState = { active: false, index: null, preview: null };
+
+function createDragPreview(text) {
+  let el = document.getElementById('drag-preview');
+  if (!el) { el = document.createElement('div'); el.id = 'drag-preview'; document.body.appendChild(el); }
+  el.textContent = text;
+  el.style.display = 'block';
+  return el;
+}
+
+function moveDragPreview(x, y) {
+  const el = document.getElementById('drag-preview');
+  if (el) { el.style.left = x + 'px'; el.style.top = y + 'px'; }
+}
+
+function removeDragPreview() {
+  const el = document.getElementById('drag-preview');
+  if (el) el.style.display = 'none';
+}
+
+function getCanvasRegionFromClient(clientX, clientY) {
+  const canvas = $('venn');
+  const rect = canvas.getBoundingClientRect();
+  if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) return null;
+  const x = (clientX - rect.left) * (canvas.width / rect.width);
+  const y = (clientY - rect.top) * (canvas.height / rect.height);
+  return canvasRegion(x, y);
+}
+
+function highlightCanvasDrop(region) {
+  drawVenn(region || undefined);
+  // extra glow on canvas when hovering a valid drop zone
+  const canvas = $('venn');
+  canvas.style.filter = region && region !== 'OUT' ? 'brightness(1.18) drop-shadow(0 0 12px #f0c04088)' : '';
+}
+
+function dragStart(e, index) {
+  if (!app.game || app.game.finished) return;
+  if (app.game.used.includes(index)) return;
+  // Only activate on actual drag movement, handled in mousemove
+  dragState.pendingIndex = index;
+  dragState.startX = e.clientX;
+  dragState.startY = e.clientY;
+}
+
+document.addEventListener('mousemove', e => {
+  // Activate drag if moved > 6px
+  if (dragState.pendingIndex !== null && dragState.pendingIndex !== undefined && !dragState.active) {
+    const dx = e.clientX - dragState.startX, dy = e.clientY - dragState.startY;
+    if (Math.hypot(dx, dy) > 6) {
+      dragState.active = true;
+      dragState.index = dragState.pendingIndex;
+      dragState.pendingIndex = null;
+      const token = app.game.level.tokens[dragState.index];
+      app.game.selectedIndex = dragState.index;
+      createDragPreview(token);
+      renderTokens();
+    }
+  }
+  if (!dragState.active) return;
+  moveDragPreview(e.clientX, e.clientY);
+  const region = getCanvasRegionFromClient(e.clientX, e.clientY);
+  highlightCanvasDrop(region);
+});
+
+document.addEventListener('mouseup', e => {
+  dragState.pendingIndex = null;
+  if (!dragState.active) return;
+  const region = getCanvasRegionFromClient(e.clientX, e.clientY);
+  endDrag(region);
+});
+
+function endDrag(region) {
+  dragState.active = false;
+  dragState.index = null;
+  removeDragPreview();
+  $('venn').style.filter = '';
+  if (region && region !== 'OUT' && app.game && !app.game.finished) {
+    placeSelected(region);
+  } else if (region === 'OUT') {
+    setMessage('Solte o token dentro de uma das regiões do diagrama.', 'hint');
+    renderTokens();
+    drawVenn();
+  } else {
+    renderTokens();
+    drawVenn();
+  }
+}
+
+// Touch support
+function touchDragStart(e, index) {
+  if (!app.game || app.game.finished) return;
+  if (app.game.used.includes(index)) return;
+  e.preventDefault();
+  dragState.active = true;
+  dragState.index = index;
+  app.game.selectedIndex = index;
+  const token = app.game.level.tokens[index];
+  createDragPreview(token);
+  const t = e.touches[0];
+  moveDragPreview(t.clientX, t.clientY);
+  renderTokens();
+}
+
+document.addEventListener('touchmove', e => {
+  if (!dragState.active) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  moveDragPreview(t.clientX, t.clientY);
+  const region = getCanvasRegionFromClient(t.clientX, t.clientY);
+  highlightCanvasDrop(region);
+}, { passive: false });
+
+document.addEventListener('touchend', e => {
+  if (!dragState.active) return;
+  const t = e.changedTouches[0];
+  const region = getCanvasRegionFromClient(t.clientX, t.clientY);
+  endDrag(region);
+});
 
 $('venn').addEventListener('click', event => {
   if (!app.game || app.game.finished) return;
