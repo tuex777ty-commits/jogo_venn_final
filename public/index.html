@@ -811,7 +811,7 @@
       <input id="input-modal-field" class="input" type="text" maxlength="60" style="margin-bottom:14px;" onkeydown="if(event.key==='Enter')inputModalConfirm()">
       <div style="display:flex;gap:10px;">
         <button id="input-modal-btn" class="btn green" onclick="inputModalConfirm()" style="flex:1;"></button>
-        <button class="btn red" onclick="inputModalCancel()" style="flex:0 0 auto;padding:12px 16px;">CANCELAR</button>
+        <button class="btn red" onclick="inputModalCancel()" style="flex:1;">CANCELAR</button>
       </div>
     </div>
   </div>
@@ -1027,7 +1027,7 @@ let app = {
   leaderboardType: 'offline',
   leaderboardPhaseId: '1',
   toastId: null,
-  audio: { enabled: false, ctx: null, osc: null, gain: null }
+  audio: { enabled: false, ctx: null, masterGain: null, loopTimeout: null }
 };
 
 function isInt(n) { return Number.isInteger(Number(n)); }
@@ -2023,17 +2023,91 @@ function openCredits() {
 function toggleMusic() {
   if (app.audio.enabled) return stopMusic();
   try {
-    app.audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const ctx = app.audio.ctx;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = 110;
-    gain.gain.value = 0.015;
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    app.audio = { enabled: true, ctx, osc, gain };
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Melodia estilo puzzle/ambient em loop
+    const BPM = 110;
+    const beat = 60 / BPM;
+
+    // Notas da melodia principal (Hz) — escala pentatônica
+    const melody = [
+      261.63, 293.66, 329.63, 392.00, 440.00,
+      392.00, 349.23, 329.63, 293.66, 261.63,
+      293.66, 329.63, 392.00, 440.00, 523.25,
+      440.00, 392.00, 329.63, 261.63, 0
+    ];
+
+    // Baixo (notas de fundo)
+    const bass = [130.81, 0, 130.81, 0, 164.81, 0, 164.81, 0, 146.83, 0, 146.83, 0, 130.81, 0, 0, 0, 130.81, 0, 130.81, 0];
+
+    const masterGain = ctx.createGain();
+    masterGain.gain.value = 0.18;
+    masterGain.connect(ctx.destination);
+
+    // Reverb simples (convolver)
+    function makeReverb(ctx) {
+      const convolver = ctx.createConvolver();
+      const length = ctx.sampleRate * 1.5;
+      const buffer = ctx.createBuffer(2, length, ctx.sampleRate);
+      for (let c = 0; c < 2; c++) {
+        const data = buffer.getChannelData(c);
+        for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
+      }
+      convolver.buffer = buffer;
+      return convolver;
+    }
+
+    const reverb = makeReverb(ctx);
+    const reverbGain = ctx.createGain();
+    reverbGain.gain.value = 0.25;
+    reverb.connect(reverbGain);
+    reverbGain.connect(masterGain);
+
+    let loopTimeout = null;
+
+    function playLoop() {
+      const startTime = ctx.currentTime + 0.05;
+      const loopDuration = melody.length * beat;
+
+      melody.forEach((freq, i) => {
+        if (freq === 0) return;
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        const t = startTime + i * beat;
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.5, t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.001, t + beat * 0.85);
+        osc.connect(g);
+        g.connect(masterGain);
+        g.connect(reverb);
+        osc.start(t);
+        osc.stop(t + beat);
+      });
+
+      bass.forEach((freq, i) => {
+        if (freq === 0) return;
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const t = startTime + i * beat;
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.35, t + 0.05);
+        g.gain.exponentialRampToValueAtTime(0.001, t + beat * 0.7);
+        osc.connect(g);
+        g.connect(masterGain);
+        osc.start(t);
+        osc.stop(t + beat);
+      });
+
+      loopTimeout = setTimeout(playLoop, loopDuration * 1000 - 50);
+    }
+
+    playLoop();
+
+    app.audio = { enabled: true, ctx, masterGain, loopTimeout };
     $('music-btn').textContent = '🔊';
     showToast('Música ambiente ligada.');
   } catch (_) {
@@ -2043,10 +2117,10 @@ function toggleMusic() {
 
 function stopMusic() {
   try {
-    if (app.audio.osc) app.audio.osc.stop();
+    if (app.audio.loopTimeout) clearTimeout(app.audio.loopTimeout);
     if (app.audio.ctx) app.audio.ctx.close();
   } catch (_) {}
-  app.audio = { enabled: false, ctx: null, osc: null, gain: null };
+  app.audio = { enabled: false, ctx: null, masterGain: null, loopTimeout: null };
   if ($('music-btn')) $('music-btn').textContent = '🔇';
 }
 
