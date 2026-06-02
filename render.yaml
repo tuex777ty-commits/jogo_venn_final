@@ -1,0 +1,20 @@
+databases:
+  - name: portal-de-venn-db
+    databaseName: venndb
+    user: venn
+    plan: free
+
+services:
+  - type: web
+    name: portal-de-venn-online
+    env: node
+    plan: free
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: portal-de-venn-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production

@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Portal de Venn - Online</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #f0c040;
+    --gold-dim: #c8922a;
+    --gold-glow: #f0c04055;
+    --cream: #f5e6c8;
+    --bg-deep: #1a0e05;
+    --bg-mid: #2c1a08;
+    --bg-light: #3d2510;
+    --border: #7a5a20;
+    --border-dim: #7a5a2055;
+    --text-dim: #9a7a40;
+    --blue: #4488ff;
+    --red: #ff6644;
+    --purple: #a080f0;
+  }
+
+  body {
+    background: #0d0702;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Cinzel', serif;
+    padding: 20px;
+  }
+
+  #menu-screen, #game-screen, #leaderboard-screen {
+    transition: opacity 0.35s ease;
+  }
+  #menu-screen.hidden, #game-screen.hidden, #leaderboard-screen.hidden {
+    display: none !important;
+  }
+
+  /* ═════════════════════════════════════════
+     TELA DE LOGIN/REGISTRO
+  ═════════════════════════════════════════ */
+  #login-screen {
+    position: fixed;
+    inset: 0;
+    background: #0d0702;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    transition: opacity 0.35s ease;
+  }
+  #login-screen.hidden {
+    display: none !important;
+  }
+
+  .login-box {
+    width: 380px;
+    background: radial-gradient(ellipse at 50% 0%, #3d2510 0%, #1a0e05 70%);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 24px;
+    box-shadow: 0 0 60px #f0c04018;
+  }
+
+  .login-title {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 24px;
+    letter-spacing: 2px;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .login-input {
+    background: #0f0905;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--cream);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .login-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 12px #f0c04022;
+  }
+
+  .login-input::placeholder {
+    color: var(--text-dim);
+  }
+
+  .login-btn {
+    padding: 12px 18px;
+    background: linear-gradient(135deg, #4a3010 0%, #2c1a08 100%);
+    border: 2px solid var(--gold-dim);
+    border-radius: 8px;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 6px;
+  }
+
+  .login-btn:hover {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, #5a3a18 0%, #3d2510 100%);
+    box-shadow: 0 0 16px #f0c04022;
+  }
+
+  .login-toggle {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 12px;
+    cursor: pointer;
+  }
+
+  .login-toggle a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .login-toggle a:hover {
+    text-decoration: underline;
+  }
+
+  /* ═════════════════════════════════════════
+     LEADERBOARD
+  ═════════════════════════════════════════ */
+  .leaderboard-container {
+    width: 100%;
+    max-width: 900px;
+    background: radial-gradient(ellipse at 50% 0%, #3d2510 0%, #1a0e05 70%);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 60px #f0c04018;
+  }
+
+  .leaderboard-header {
+    text-align: center;
+    padding: 24px 20px 16px;
+    background: linear-gradient(180deg, #2c1a08 0%, transparent 100%);
+    border-bottom: 2px solid #7a5a20;
+  }
+
+  .leaderboard-title {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+
+  .leaderboard-tabs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 12px;
+  }
+
+  .leaderboard-tab {
+    padding: 8px 16px;
+    background: #2a1808;
+    border: 1.5px solid var(--border-dim);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .leaderboard-tab.active {
+    background: linear-gradient(135deg, #4a3010 0%, #2c1a08 100%);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .leaderboard-tab:hover:not(.active) {
+    border-color: var(--gold-dim);
+  }
+
+  .leaderboard-body {
+    padding: 20px;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .leaderboard-row {
+    display: grid;
+    grid-template-columns: 50px 1fr 100px 100px 100px;
+    gap: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: #0f0905;
+    border: 1px solid var(--border-dim);
+    border-radius: 8px;
+    align-items: center;
+    transition: all 0.2s;
+  }
+
+  .leaderboard-row:hover {
+    background: #1a1005;
+    border-color: var(--border);
+    box-shadow: 0 0 12px #f0c04018;
+  }
+
+  .leaderboard-rank {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  .leaderboard-rank.gold { color: #ffd700; }
+  .leaderboard-rank.silver { color: #c0c0c0; }
+  .leaderboard-rank.bronze { color: #cd7f32; }
+
+  .leaderboard-player {
+    font-size: 12px;
+    color: var(--cream);
+    font-weight: 700;
+  }
+
+  .leaderboard-stat {
+    text-align: center;
+    font-size: 11px;
+    color: var(--gold);
+  }
+
+  .leaderboard-stat-label {
+    font-size: 9px;
+    color: var(--text-dim);
+    display: block;
+  }
+
+  .leaderboard-footer {
+    padding: 16px 20px;
+    text-align: center;
+    border-top: 1px solid var(--border-dim);
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .btn-back {
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #3a1a30 0%, #1a0818 100%);
+    border: 2px solid #8040a0;
+    border-radius: 8px;
+    color: #d090f0;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-back:hover {
+    border-color: #b060d0;
+    background: linear-gradient(135deg, #4a2a40 0%, #2a0a28 100%);
+  }
+
+  .leaderboard-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+    font-size: 12px;
+  }
+
+  .leaderboard-loading::after {
+    content: '';
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* ═════════════════════════════════════════
+     MENU E JOGO - Estilos anteriores
+  ═════════════════════════════════════════ */
+  #menu-root {
+    width: 480px;
+    min-height: 620px;
+    background: radial-gradient(ellipse at 50% 0%, #3d2510 0%, #1a0e05 60%, #0d0702 100%);
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    color: var(--cream);
+    user-select: none;
+    box-shadow: 0 0 60px #f0c04018, 0 0 120px #00000099;
+  }
+
+  .menu-btn {
+    display: flex; align-items: center; gap: 14px; width: 100%; padding: 13px 18px;
+    background: linear-gradient(135deg, #2c1a08 0%, #1a0e05 100%);
+    border: 1.5px solid var(--border); border-radius: 10px;
+    color: var(--cream); font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 2px; cursor: pointer; transition: all 0.18s;
+    position: relative; overflow: hidden; text-align: left;
+  }
+  .menu-btn:hover {
+    border-color: var(--gold-dim);
+    background: linear-gradient(135deg, #3d2510 0%, #2c1a08 100%);
+    box-shadow: 0 0 16px #f0c04022;
+    transform: translateX(3px);
+  }
+
+  .menu-buttons { padding: 0 28px; display: flex; flex-direction: column; gap: 9px; }
+  .bottom-row { display: flex; gap: 9px; margin-top: 2px; }
+  .bottom-row .menu-btn { flex: 1; font-size: 11px; padding: 10px 12px; gap: 10px; }
+
+  .btn-icon { font-size: 22px; flex-shrink: 0; }
+  .btn-text { flex: 1; }
+  .btn-label { display: block; color: var(--gold); }
+  .btn-desc { display: block; font-size: 9px; color: var(--text-dim); letter-spacing: 1px; margin-top: 2px; font-family: 'Crimson Text', serif; font-style: italic; }
+
+  #game-root {
+    font-family: 'Cinzel', serif;
+    background: radial-gradient(ellipse at 50% 0%, #3d2510 0%, #1a0e05 70%);
+    min-height: 600px; border-radius: 16px; overflow: hidden; position: relative;
+    color: #f5e6c8; user-select: none; width: 620px;
+  }
+
+  .action-row { display: flex; gap: 8px; justify-content: center; width: 100%; }
+  .btn-main { padding: 8px 18px; background: linear-gradient(180deg, #5a3a10 0%, #3a2208 100%); border: 2px solid #c8922a; border-radius: 8px; color: #f0c040; font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: all 0.15s; }
+  .btn-main:hover { background: linear-gradient(180deg, #7a5a20 0%, #5a3a10 100%); box-shadow: 0 0 10px #f0c04033; }
+  .btn-main.confirm { background: linear-gradient(180deg, #1a5a20 0%, #0a3a10 100%); border-color: #40c050; color: #80f090; }
+  .btn-main.menu-back { background: linear-gradient(180deg, #3a1a30 0%, #1a0818 100%); border-color: #8040a0; color: #d090f0; }
+
+  .online-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 16px;
+    background: #1a1a0a;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .online-indicator.connected {
+    border-color: #40c050;
+    color: #80f090;
+  }
+
+  .online-dot {
+    width: 8px;
+    height: 8px;
+    background: #7a5a30;
+    border-radius: 50%;
+    animation: none;
+  }
+
+  .online-indicator.connected .online-dot {
+    background: #40c050;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     TELA DE LOGIN
+═══════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-title" id="login-title">🔐 ENTRAR</div>
+    <form class="login-form" id="login-form" onsubmit="handleLogin(event)">
+      <input type="text" class="login-input" id="username" placeholder="Nome de Usuário" required>
+      <input type="email" class="login-input" id="email" placeholder="Email" required>
+      <button type="submit" class="login-btn" id="login-btn">ENTRAR</button>
+      <div class="login-toggle">
+        Novo por aqui? <a onclick="toggleLoginMode()">Criar conta</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Indicador de conexão online -->
+<div class="online-indicator" id="online-indicator">
+  <span class="online-dot"></span>
+  <span id="online-text">Conectando...</span>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TELA DE LEADERBOARD
+═══════════════════════════════════════════════ -->
+<div id="leaderboard-screen" class="hidden">
+  <div class="leaderboard-container">
+    <div class="leaderboard-header">
+      <div class="leaderboard-title">🏆 RANKING GLOBAL</div>
+      <div class="leaderboard-tabs">
+        <button class="leaderboard-tab active" onclick="switchLeaderboardTab('global')">🌍 GLOBAL</button>
+        <button class="leaderboard-tab" onclick="switchLeaderboardTab('bysala')">📊 POR SALA</button>
+        <button class="leaderboard-tab" onclick="switchLeaderboardTab('profile')">👤 MEU PERFIL</button>
+      </div>
+    </div>
+    <div class="leaderboard-body" id="leaderboard-body">
+      <div class="leaderboard-loading">Carregando dados...</div>
+    </div>
+    <div class="leaderboard-footer">
+      <button class="btn-back" onclick="closeLeaderboard()">⬅ VOLTAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TELA DO MENU (anterior)
+═══════════════════════════════════════════════ -->
+<div id="menu-screen">
+<div id="menu-root">
+  <div class="rune-grid"><canvas id="rune-canvas"></canvas></div>
+  <div id="sparks"></div>
+  <div class="corner-flames">
+    <span class="cf">🔥</span><span class="cf">🔥</span><span class="cf">🔥</span>
+  </div>
+
+  <div class="menu-header" style="text-align: center; padding: 16px 24px 10px; position: relative;">
+    <div style="font-size: 30px; font-weight: 900; color: var(--gold); letter-spacing: 4px; text-shadow: 0 0 20px var(--gold-glow), 2px 2px 0 #3d2510; animation: titlePulse 3s ease-in-out infinite;">O PORTAL DE VENN</div>
+    <div style="font-size: 10px; color: var(--text-dim); letter-spacing: 4px; margin-top: 5px; font-family: 'Crimson Text', serif; font-style: italic;">Um jogo de lógica e conjuntos matemáticos</div>
+  </div>
+
+  <div class="menu-buttons" style="margin-top: 20px;">
+    <button class="menu-btn" onclick="startNewGame()" style="background: linear-gradient(135deg, #4a3010 0%, #2c1a08 100%); border-color: var(--gold-dim);">
+      <span class="btn-icon">⚔️</span>
+      <span class="btn-text">
+        <span class="btn-label">NOVO JOGO</span>
+        <span class="btn-desc">Começa do início — Sala 1 · Estável</span>
+      </span>
+    </button>
+
+    <div class="bottom-row">
+      <button class="menu-btn" onclick="openLeaderboard()">
+        <span class="btn-icon">🏆</span>
+        <span class="btn-text">
+          <span class="btn-label">RANKING</span>
+          <span class="btn-desc">Veja os melhores</span>
+        </span>
+      </button>
+      <button class="menu-btn" onclick="logout()">
+        <span class="btn-icon">🚪</span>
+        <span class="btn-text">
+          <span class="btn-label">SAIR</span>
+          <span class="btn-desc">Desconectar</span>
+        </span>
+      </button>
+    </div>
+
+    <div style="text-align: center; margin-top: 12px; font-size: 11px; color: var(--text-dim);" id="player-display">Usuário: —</div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TELA DO JOGO (anterior)
+═══════════════════════════════════════════════ -->
+<div id="game-screen" class="hidden">
+<div id="game-root">
+  <div class="action-row" style="padding: 10px; gap: 8px; justify-content: space-between; background: #0f0905; border-bottom: 1px solid #7a5a30;">
+    <button class="btn-main" onclick="clearSelection()" style="flex:0;padding:6px 12px;font-size:10px;">CANCELAR</button>
+    <div style="text-align:center;flex:1;">
+      <div style="font-size:10px;color:#9a7a40;letter-spacing:1px;">SALA</div>
+      <div style="font-size:18px;font-weight:700;color:#f0c040;" id="hud-level">1</div>
+    </div>
+    <button class="btn-main menu-back" onclick="goToMenu()" style="flex:0;padding:6px 12px;font-size:10px;">⬅ MENU</button>
+  </div>
+
+  <div class="action-row" style="padding: 8px 20px; gap: 12px; background: #0f0905; border-bottom: 1px solid #7a5a30; justify-content: space-around;">
+    <div style="text-align:center;"><span style="font-size:9px;color:#9a7a40;letter-spacing:1px;display:block;">PONTOS</span><span style="font-size:16px;font-weight:700;color:#f0c040;display:block;" id="hud-pts">0</span></div>
+    <div style="text-align:center;"><span style="font-size:9px;color:#9a7a40;letter-spacing:1px;display:block;">TEMPO</span><span style="font-size:16px;font-weight:700;color:#f0c040;display:block;" id="hud-time">01:30</span></div>
+    <div style="text-align:center;"><span style="font-size:9px;color:#9a7a40;letter-spacing:1px;display:block;">ERROS</span><span style="font-size:16px;font-weight:700;color:#f0c040;display:block;" id="hud-erros">0</span></div>
+  </div>
+
+  <canvas id="venn" width="400" height="260" style="width: 100%; height: auto; border: 1px solid #7a5a30; display: block;"></canvas>
+
+  <div style="padding: 12px 20px; text-align: center; font-size: 11px; color: #c8a05a;" id="msg-bar">Aguarde o carregamento...</div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  SISTEMA ONLINE
+// ═══════════════════════════════════════════════════
+const API_URL = 'https://portal-venn-api.onrender.com/api';
+// Para teste local, use:
+// const API_URL = 'http://localhost:3000/api';
+
+let onlineState = {
+  connected: false,
+  currentUser: null,
+  loginMode: 'login', // 'login' ou 'register'
+  leaderboardData: {}
+};
+
+// ── CONEXÃO ──────────────────────────────────────
+async function checkConnection() {
+  try {
+    const response = await fetch(API_URL + '/health', { method: 'GET' });
+    if (response.ok) {
+      setOnlineStatus(true);
+      return true;
+    }
+  } catch (e) {
+    console.log('Servidor offline');
+  }
+  setOnlineStatus(false);
+  return false;
+}
+
+function setOnlineStatus(connected) {
+  onlineState.connected = connected;
+  const indicator = document.getElementById('online-indicator');
+  const text = document.getElementById('online-text');
+  if (connected) {
+    indicator.classList.add('connected');
+    text.textContent = 'ONLINE';
+  } else {
+    indicator.classList.remove('connected');
+    text.textContent = 'OFFLINE';
+  }
+}
+
+// ── LOGIN ────────────────────────────────────────
+function toggleLoginMode() {
+  onlineState.loginMode = onlineState.loginMode === 'login' ? 'register' : 'login';
+  document.getElementById('login-title').textContent = 
+    onlineState.loginMode === 'login' ? '🔐 ENTRAR' : '✍️ REGISTRAR';
+  document.getElementById('login-btn').textContent = 
+    onlineState.loginMode === 'login' ? 'ENTRAR' : 'REGISTRAR';
+}
+
+async function handleLogin(event) {
+  event.preventDefault();
+  const username = document.getElementById('username').value.trim();
+  const email = document.getElementById('email').value.trim();
+
+  if (!username || !email) {
+    alert('Preencha todos os campos!');
+    return;
+  }
+
+  try {
+    const endpoint = onlineState.loginMode === 'login' 
+      ? '/auth/login' 
+      : '/auth/register';
+
+    const response = await fetch(API_URL + endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message || 'Erro na autenticação');
+      return;
+    }
+
+    onlineState.currentUser = {
+      id: data.user.id,
+      username: data.user.username,
+      email: data.user.email
+    };
+
+    localStorage.setItem('portalVennUser', JSON.stringify(onlineState.currentUser));
+    showMenu();
+  } catch (error) {
+    console.error('Erro:', error);
+    alert('Erro ao conectar com o servidor');
+  }
+}
+
+function logout() {
+  onlineState.currentUser = null;
+  localStorage.removeItem('portalVennUser');
+  localStorage.removeItem('portalVennSave');
+  document.getElementById('username').value = '';
+  document.getElementById('email').value = '';
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('menu-screen').classList.add('hidden');
+}
+
+// ── LEADERBOARD ──────────────────────────────────
+async function openLeaderboard() {
+  document.getElementById('leaderboard-screen').classList.remove('hidden');
+  document.getElementById('menu-screen').classList.add('hidden');
+  loadLeaderboardGlobal();
+}
+
+function closeLeaderboard() {
+  document.getElementById('leaderboard-screen').classList.add('hidden');
+  document.getElementById('menu-screen').classList.remove('hidden');
+}
+
+async function switchLeaderboardTab(tab) {
+  // Atualizar botões
+  document.querySelectorAll('.leaderboard-tab').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+
+  if (tab === 'global') loadLeaderboardGlobal();
+  else if (tab === 'bysala') loadLeaderboardBySala();
+  else if (tab === 'profile') loadPlayerProfile();
+}
+
+async function loadLeaderboardGlobal() {
+  const body = document.getElementById('leaderboard-body');
+  body.innerHTML = '<div class="leaderboard-loading">Carregando...</div>';
+
+  try {
+    const response = await fetch(API_URL + '/leaderboard/global');
+    const data = await response.json();
+
+    let html = '';
+    data.forEach((player, idx) => {
+      const medalEmoji = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}`;
+      html += `
+        <div class="leaderboard-row">
+          <div class="leaderboard-rank ${idx === 0 ? 'gold' : idx === 1 ? 'silver' : idx === 2 ? 'bronze' : ''}">${medalEmoji}</div>
+          <div class="leaderboard-player">${player.username}</div>
+          <div class="leaderboard-stat">
+            <span class="leaderboard-stat-label">PONTOS</span>
+            ${player.totalPoints}
+          </div>
+          <div class="leaderboard-stat">
+            <span class="leaderboard-stat-label">TEMPO MÉD</span>
+            ${Math.round(player.avgTime)}s
+          </div>
+          <div class="leaderboard-stat">
+            <span class="leaderboard-stat-label">SALAS</span>
+            ${player.completedLevels}
+          </div>
+        </div>
+      `;
+    });
+
+    body.innerHTML = html || '<div class="leaderboard-loading">Nenhum dado ainda</div>';
+  } catch (error) {
+    body.innerHTML = '<div class="leaderboard-loading">Erro ao carregar dados</div>';
+  }
+}
+
+async function loadLeaderboardBySala() {
+  const body = document.getElementById('leaderboard-body');
+  body.innerHTML = '<div class="leaderboard-loading">Carregando...</div>';
+
+  try {
+    const response = await fetch(API_URL + '/leaderboard/bysala');
+    const data = await response.json();
+
+    let html = '<div style="text-align: center; color: var(--text-dim); padding: 20px;">';
+    Object.entries(data).forEach(([sala, players]) => {
+      html += `<div style="margin: 20px 0; border-bottom: 1px solid var(--border-dim); padding-bottom: 12px;">
+        <div style="font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 12px;">SALA ${sala}</div>`;
+      players.forEach((player, idx) => {
+        html += `
+          <div class="leaderboard-row" style="margin-bottom: 6px;">
+            <div class="leaderboard-rank">${idx + 1}</div>
+            <div class="leaderboard-player">${player.username}</div>
+            <div class="leaderboard-stat"><span class="leaderboard-stat-label">TEMPO</span>${player.timeUsed}s</div>
+            <div class="leaderboard-stat"><span class="leaderboard-stat-label">ERROS</span>${player.errors}</div>
+            <div class="leaderboard-stat"><span class="leaderboard-stat-label">PONTOS</span>${player.points}</div>
+          </div>
+        `;
+      });
+      html += '</div>';
+    });
+    html += '</div>';
+
+    body.innerHTML = html;
+  } catch (error) {
+    body.innerHTML = '<div class="leaderboard-loading">Erro ao carregar dados</div>';
+  }
+}
+
+async function loadPlayerProfile() {
+  const body = document.getElementById('leaderboard-body');
+  body.innerHTML = '<div class="leaderboard-loading">Carregando...</div>';
+
+  try {
+    const response = await fetch(API_URL + `/players/${onlineState.currentUser.id}`);
+    const player = await response.json();
+
+    let html = `
+      <div style="text-align: center; padding: 20px; color: var(--cream);">
+        <div style="font-size: 24px; font-weight: 900; color: var(--gold); margin-bottom: 16px;">👤 ${player.username}</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+          <div style="background: #0f0905; border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 10px; color: var(--text-dim); letter-spacing: 1px;">PONTOS TOTAIS</div>
+            <div style="font-size: 20px; font-weight: 700; color: var(--gold);">${player.totalPoints}</div>
+          </div>
+          <div style="background: #0f0905; border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 10px; color: var(--text-dim); letter-spacing: 1px;">SALAS COMPLETAS</div>
+            <div style="font-size: 20px; font-weight: 700; color: var(--gold);">${player.completedLevels}</div>
+          </div>
+          <div style="background: #0f0905; border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 10px; color: var(--text-dim); letter-spacing: 1px;">TEMPO MÉDIO</div>
+            <div style="font-size: 20px; font-weight: 700; color: var(--gold);">${Math.round(player.avgTime)}s</div>
+          </div>
+          <div style="background: #0f0905; border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 10px; color: var(--text-dim); letter-spacing: 1px;">TOTAL DE ERROS</div>
+            <div style="font-size: 20px; font-weight: 700; color: var(--gold);">${player.totalErrors}</div>
+          </div>
+        </div>
+        <div style="background: #0f0905; border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 12px;">TOP 5 MELHORES TEMPOS</div>
+          ${player.topTimes.map((t, i) => `
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: ${i < 4 ? '1px solid #3a2510' : 'none'}; font-size: 10px;">
+              <span>Sala ${t.levelIndex + 1}:</span>
+              <span style="color: var(--gold);">${t.timeUsed}s</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    body.innerHTML = html;
+  } catch (error) {
+    body.innerHTML = '<div class="leaderboard-loading">Erro ao carregar perfil</div>';
+  }
+}
+
+// ── ENVIAR RESULTADOS ────────────────────────────
+async function submitGameSession(gameData) {
+  if (!onlineState.connected || !onlineState.currentUser) {
+    console.log('Offline - não enviando dados');
+    return;
+  }
+
+  try {
+    const response = await fetch(API_URL + '/sessions/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: onlineState.currentUser.id,
+        ...gameData
+      })
+    });
+
+    if (response.ok) {
+      console.log('✅ Sessão enviada com sucesso!');
+    }
+  } catch (error) {
+    console.error('Erro ao enviar sessão:', error);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  INICIALIZAÇÃO
+// ═══════════════════════════════════════════════════
+async function initApp() {
+  // Verificar conexão
+  await checkConnection();
+
+  // Verificar se usuário já está logado
+  const savedUser = localStorage.getItem('portalVennUser');
+  if (savedUser) {
+    onlineState.currentUser = JSON.parse(savedUser);
+    updatePlayerDisplay();
+    showMenu();
+  } else {
+    document.getElementById('login-screen').classList.remove('hidden');
+  }
+}
+
+function updatePlayerDisplay() {
+  if (onlineState.currentUser) {
+    document.getElementById('player-display').textContent = 
+      `👤 ${onlineState.currentUser.username}`;
+  }
+}
+
+function showMenu() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('menu-screen').classList.remove('hidden');
+  updatePlayerDisplay();
+}
+
+// ═══════════════════════════════════════════════════
+//  STUBS DO JOGO (será integrado com o jogo real)
+// ═══════════════════════════════════════════════════
+function startNewGame() {
+  alert('🎮 Iniciando novo jogo...');
+  // Aqui integrará com o jogo real
+}
+
+function goToMenu() {
+  showMenu();
+}
+
+function clearSelection() {
+  // Implementar
+}
+
+// Inicializar
+window.addEventListener('load', initApp);
+
+// Sincronizar status a cada 5 segundos
+setInterval(() => checkConnection(), 5000);
+</script>
+</body>
+</html>
